@@ -1,0 +1,13 @@
+package ust.tad.helmplugin;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class HelmPluginApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(HelmPluginApplication.class, args);
+	}
+
+}
