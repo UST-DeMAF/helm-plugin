@@ -180,4 +180,22 @@ public class TechnologySpecificDeploymentModel {
         this.commands.add(command);
     }
 
+    /**
+     * Add a new embeddedDeploymentModel or update it if it already exists.
+     * 
+     * @param newEmbeddedDeploymentModel
+     * @return the index of the new embeddedDeploymentModel in the embeddedDeploymentModels List field.
+     */
+    public int addOrUpdateEmbeddedDeploymentModel(TechnologySpecificDeploymentModel newEmbeddedDeploymentModel) {
+        for (TechnologySpecificDeploymentModel embeddedDeploymentModel : this.embeddedDeploymentModels) {
+            if (newEmbeddedDeploymentModel.getId().equals(embeddedDeploymentModel.getId())) {
+                int index = this.embeddedDeploymentModels.indexOf(embeddedDeploymentModel);
+                this.embeddedDeploymentModels.set(index, newEmbeddedDeploymentModel);
+                return index;
+            }
+        }
+        addEmbeddedDeploymentModel(newEmbeddedDeploymentModel);
+        return this.embeddedDeploymentModels.indexOf(newEmbeddedDeploymentModel);
+    }
+
 }
