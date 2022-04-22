@@ -59,7 +59,6 @@ public class PluginRegistrationRunner implements ApplicationRunner{
         LOG.info("Registering Plugin");
 
         String body = createPluginRegistrationBody();
-        LOG.info("Created body: " + body);
 
         PluginRegistrationResponse response = pluginRegistrationApiClient.post()
             .contentType(MediaType.APPLICATION_JSON)

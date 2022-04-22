@@ -2,6 +2,8 @@ package ust.tad.helmplugin.models;
 
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -14,6 +16,9 @@ import ust.tad.helmplugin.models.tsdm.TechnologySpecificDeploymentModel;
 
 @Service
 public class ModelsService {
+    
+    private static final Logger LOG =
+      LoggerFactory.getLogger(ModelsService.class);
     
     @Autowired
     private WebClient modelsServiceApiClient;
@@ -28,6 +33,7 @@ public class ModelsService {
      * @return
      */
     public TechnologySpecificDeploymentModel getTechnologySpecificDeploymentModel(UUID transformationProcessId) {
+        LOG.info("Requesting technology-specific deployment model");
         return modelsServiceApiClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/technology-specific/"+transformationProcessId)
@@ -44,6 +50,7 @@ public class ModelsService {
      * @param annotatedDeploymentModel
      */
     public void updateTechnologySpecificDeploymentModel(TechnologySpecificDeploymentModel technologySpecificDeploymentModel) {
+        LOG.info("Updating technology-specific deployment model");
         modelsServiceApiClient.post()
             .uri("/technology-specific")
             .contentType(MediaType.APPLICATION_JSON)
@@ -61,6 +68,7 @@ public class ModelsService {
      * @return
      */
     public TechnologyAgnosticDeploymentModel getTechnologyAgnosticDeploymentModel(UUID transformationProcessId) {
+        LOG.info("Requesting technology-agnostic deployment model");
          return modelsServiceApiClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/technology-agnostic/"+transformationProcessId)
@@ -77,6 +85,7 @@ public class ModelsService {
      * @param technologyAgnosticDeploymentModel
      */
     public void updateTechnologyAgnosticDeploymentModel(TechnologyAgnosticDeploymentModel technologyAgnosticDeploymentModel) {
+        LOG.info("Updating technology-agnostic deployment model");
         modelsServiceApiClient.post()
             .uri("/technology-agnostic")
             .contentType(MediaType.APPLICATION_JSON)

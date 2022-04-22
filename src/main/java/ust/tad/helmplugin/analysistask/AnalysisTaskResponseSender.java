@@ -7,6 +7,8 @@ import java.util.UUID;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageProperties;
@@ -21,6 +23,9 @@ import ust.tad.helmplugin.models.tsdm.TechnologySpecificDeploymentModel;
 
 @Service
 public class AnalysisTaskResponseSender {
+    
+    private static final Logger LOG =
+      LoggerFactory.getLogger(AnalysisTaskResponseSender.class);
 
     @Autowired
     private RabbitTemplate template;
@@ -30,8 +35,8 @@ public class AnalysisTaskResponseSender {
 
     
     public void sendSuccessResponse(UUID taskId)  {
+        LOG.info("Transformation completed successfully, sending success response");
         ObjectMapper objectMapper = new ObjectMapper();
-
         AnalysisTaskResponse analysisTaskResponse = new AnalysisTaskResponse();
         analysisTaskResponse.setTaskId(taskId);
         analysisTaskResponse.setSuccess(true);        
@@ -51,8 +56,8 @@ public class AnalysisTaskResponseSender {
     }
 
     public void sendFailureResponse(UUID taskId, String errorMessage)  {
+        LOG.info("Sending failure response: "+errorMessage);
         ObjectMapper objectMapper = new ObjectMapper();
-
         AnalysisTaskResponse analysisTaskResponse = new AnalysisTaskResponse();
         if(taskId != null) {
             analysisTaskResponse.setTaskId(taskId);
@@ -75,8 +80,8 @@ public class AnalysisTaskResponseSender {
     }
 
     public void sendEmbeddedDeploymentModelAnalysisRequest(EmbeddedDeploymentModelAnalysisRequest request)  {
+        LOG.info("Sending EmbeddedDeploymentModelAnalysisRequest: "+request.toString());
         ObjectMapper objectMapper = new ObjectMapper();
-
         Message message;
         try {
             message = MessageBuilder
