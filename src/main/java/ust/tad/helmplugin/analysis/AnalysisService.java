@@ -61,7 +61,7 @@ public class AnalysisService {
     public void startAnalysis(UUID taskId, UUID transformationProcessId, List<String> commands, List<Location> locations) {
         this.newEmbeddedDeploymentModelIndexes.clear();
         TechnologySpecificDeploymentModel completeTsdm = modelsService.getTechnologySpecificDeploymentModel(transformationProcessId);
-        this.tsdm = getExistingTsdm(completeTsdm, locations);
+        this.tsdm = getExistingTsdm(completeTsdm, commands);
         if(tsdm == null) {
             analysisTaskResponseSender.sendFailureResponse(taskId, "No technology-specific deployment model found!");
             return;            
@@ -125,16 +125,12 @@ public class AnalysisService {
     }
 
     
-    private TechnologySpecificDeploymentModel getExistingTsdm(TechnologySpecificDeploymentModel tsdm, List<Location> locations) {
-        for (DeploymentModelContent content : tsdm.getContent()) {
-            for (Location location : locations) {
-                if (location.getUrl().equals(content.getLocation())) {
-                    return tsdm;
-                }
-            }
+    private TechnologySpecificDeploymentModel getExistingTsdm(TechnologySpecificDeploymentModel tsdm, List<String> commands) {
+        if (tsdm.getCommands().equals(commands)) {
+            return tsdm;
         }
         for (TechnologySpecificDeploymentModel embeddedDeploymentModel : tsdm.getEmbeddedDeploymentModels()) {
-            TechnologySpecificDeploymentModel foundModel =  getExistingTsdm(embeddedDeploymentModel, locations);
+            TechnologySpecificDeploymentModel foundModel = getExistingTsdm(embeddedDeploymentModel, commands);
             if (foundModel != null) {
                 return foundModel;
             }
