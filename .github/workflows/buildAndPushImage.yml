@@ -1,0 +1,31 @@
+name: buildAndPushImage
+
+on:
+  push:
+    branches:    
+      - 'main'
+      
+env:
+  IMAGE_NAME: helm-plugin
+
+jobs:
+  build-with-paketo-push-2-dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Login to DockerHub Container Registry
+        run: echo $DOCKER_HUB_TOKEN | docker login -u well5a --password-stdin
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKERHUBTOKEN }}
+
+      - name: Install pack CLI via the official buildpack Action https://github.com/buildpacks/github-actions#setup-pack-cli-action
+        uses: buildpacks/github-actions/setup-pack@v4.8.0
+
+      - name: Build app with pack CLI using Buildpack Cache image (see https://buildpacks.io/docs/app-developer-guide/using-cache-image/) & publish to Docker Hub
+        run: |
+          pack build index.docker.io/well5a/$IMAGE_NAME:latest \
+              --builder paketobuildpacks/builder:base \
+              --path . \
+              --cache-image index.docker.io/well5a/$IMAGE_NAME-paketo-cache-image:latest \
+              --publish
