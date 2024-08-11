@@ -65,18 +65,8 @@ public class PluginRegistrationRunner implements ApplicationRunner{
 
         LOG.info("Registering Plugin");
 
-        String host = pluginRegistrationURI.split(":")[1].replace("/","");
-        int port = Integer.parseInt(pluginRegistrationURI.split(":")[2].split("/")[0]);
-        int maxAttempts = 20;
+        connectionAttempt();
 
-        for (int attempt = 0; attempt < maxAttempts; attempt++)
-        {
-            if(isServiceReachable(host, port, 5000, attempt + 1, maxAttempts))
-            {
-                break;
-            }
-            Thread.sleep(2000);
-        }
         String body = createPluginRegistrationBody();
 
         PluginRegistrationResponse response = pluginRegistrationApiClient.post()
@@ -99,6 +89,25 @@ public class PluginRegistrationRunner implements ApplicationRunner{
                 () -> new FanoutExchange(response.getResponseExchangeName(), true, false));
     }
 
+    /**
+     * Try to reach the service 20 times (maxAttempts).
+     * @throws InterruptedException
+     */
+    private void connectionAttempt() throws InterruptedException {
+        String host = pluginRegistrationURI.split(":")[1].replace("/","");
+        int port = Integer.parseInt(pluginRegistrationURI.split(":")[2].split("/")[0]);
+        int maxAttempts = 20;
+
+        for (int attempt = 0; attempt < maxAttempts; attempt++)
+        {
+            if(isServiceReachable(host, port, 5000, attempt + 1, maxAttempts))
+            {
+                break;
+            }
+            Thread.sleep(2000);
+        }
+    }
+
     private String createPluginRegistrationBody() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode plugin = mapper.createObjectNode();
@@ -116,6 +125,15 @@ public class PluginRegistrationRunner implements ApplicationRunner{
         return listener;
     }
 
+    /**
+     * Checks if Service is reachable. If so, it returns true so the plugin can start connecting otherwise it returns false.
+     * @param hostNameOrIP
+     * @param port
+     * @param timeout
+     * @param attempt
+     * @param maxAttempts
+     * @return boolean
+     */
     public static boolean isServiceReachable(String hostNameOrIP, int port, int timeout, int attempt, int maxAttempts) {
         try (Socket socket = new Socket()) {
             // Attempt to connect to the host and port within the given timeout
