@@ -15,7 +15,7 @@ env:
   IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'testing' }}
 
 jobs:
-  build-with-paketo-push-2-dockerhub:
+  build-using-dockerfile-push-2-dockerhub:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
