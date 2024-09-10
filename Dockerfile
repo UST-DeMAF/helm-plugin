@@ -1,10 +1,7 @@
-FROM debian:latest
+FROM alpine:latest
 
-RUN apt-get update \
-    && apt-get upgrade -y \
-    && apt-get install --no-install-recommends -y default-jdk maven curl \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk upgrade --no-cache \
+    && apk add --no-cache bash curl gcompat libstdc++ maven openjdk11
 
 RUN mkdir -p /app/target
 WORKDIR /app

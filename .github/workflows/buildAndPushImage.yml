@@ -11,22 +11,21 @@ on:
 
 
 env:
+  IMAGE_URL: ghcr.io/ust-demaf
   IMAGE_NAME: helm-plugin
   IMAGE_TAG: ${{ github.ref == 'refs/heads/main' && 'latest' || 'testing' }}
 
 jobs:
-  build-using-dockerfile-push-2-dockerhub:
+  build-using-dockerfile-push-2-ghcr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Login to DockerHub Container Registry
-        run: echo $DOCKER_HUB_TOKEN | docker login -u well5a --password-stdin
-        env:
-          DOCKER_HUB_TOKEN: ${{ secrets.DOCKERHUBTOKEN }}
+      - name: Login to GitHub Container Registry
+        run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u well5a --password-stdin
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag well5a/$IMAGE_NAME:$IMAGE_TAG
+        run: docker build . --file Dockerfile --tag $IMAGE_URL/$IMAGE_NAME:$IMAGE_TAG
 
       - name: Push the Docker image
-        run: docker push well5a/$IMAGE_NAME:$IMAGE_TAG
+        run: docker push $IMAGE_URL/$IMAGE_NAME:$IMAGE_TAG
