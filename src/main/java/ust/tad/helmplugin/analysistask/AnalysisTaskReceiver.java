@@ -67,7 +67,8 @@ public class AnalysisTaskReceiver {
         analysisService.startAnalysis(
             analysisTaskStartRequest.getTaskId(), 
             analysisTaskStartRequest.getTransformationProcessId(), 
-            analysisTaskStartRequest.getCommands(), 
+            analysisTaskStartRequest.getCommands(),
+            analysisTaskStartRequest.getOptions(),
             analysisTaskStartRequest.getLocations());
     }
 
@@ -77,5 +78,4 @@ public class AnalysisTaskReceiver {
     private void respondWithErrorMessage(String errorMessage) {
         analysisTaskResponseSender.sendFailureResponse(null, errorMessage);
     }
-
 }

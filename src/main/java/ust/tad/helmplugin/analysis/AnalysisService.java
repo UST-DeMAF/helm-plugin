@@ -57,7 +57,8 @@ public class AnalysisService {
      * @param locations
      * @throws InterruptedException
      */
-    public void startAnalysis(UUID taskId, UUID transformationProcessId, List<String> commands, List<Location> locations) {
+    public void startAnalysis(UUID taskId, UUID transformationProcessId, List<String> commands,
+                              List<String> options, List<Location> locations) {
         this.newEmbeddedDeploymentModelIndexes.clear();
         TechnologySpecificDeploymentModel completeTsdm = modelsService.getTechnologySpecificDeploymentModel(transformationProcessId);
         this.tsdm = getExistingTsdm(completeTsdm, commands);
@@ -141,6 +142,4 @@ public class AnalysisService {
         modelsService.updateTechnologySpecificDeploymentModel(tsdm);
         modelsService.updateTechnologyAgnosticDeploymentModel(tadm);
     }
-
-    
 }

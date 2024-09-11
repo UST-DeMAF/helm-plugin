@@ -17,17 +17,19 @@ public class AnalysisTaskStartRequest {
     @JsonProperty("commands")
     private List<String> commands;
 
+    @JsonProperty("options")
+    private List<String> options;
+
     @JsonProperty("locations")
     private List<Location> locations;
 
+    public AnalysisTaskStartRequest() {}
 
-    public AnalysisTaskStartRequest() {
-    }
-
-    public AnalysisTaskStartRequest(UUID taskId, UUID transformationProcessId, List<String> commands, List<Location> locations) {
+    public AnalysisTaskStartRequest(UUID taskId, UUID transformationProcessId, List<String> commands, List<String> options, List<Location> locations) {
         this.taskId = taskId;
         this.transformationProcessId = transformationProcessId;
         this.commands = commands;
+        this.options = options;
         this.locations = locations;
     }
 
@@ -55,6 +57,10 @@ public class AnalysisTaskStartRequest {
         this.commands = commands;
     }
 
+    public List<String> getOptions() { return this.options; }
+
+    public void setOptions(List<String> options) { this.options = options; }
+
     public List<Location> getLocations() {
         return this.locations;
     }
@@ -78,6 +84,11 @@ public class AnalysisTaskStartRequest {
         return this;
     }
 
+    public AnalysisTaskStartRequest options(List<String> options) {
+        setOptions(options);
+        return this;
+    }
+
     public AnalysisTaskStartRequest locations(List<Location> locations) {
         setLocations(locations);
         return this;
@@ -91,12 +102,16 @@ public class AnalysisTaskStartRequest {
             return false;
         }
         AnalysisTaskStartRequest analysisTaskStartRequest = (AnalysisTaskStartRequest) o;
-        return Objects.equals(taskId, analysisTaskStartRequest.taskId) && Objects.equals(transformationProcessId, analysisTaskStartRequest.transformationProcessId) && Objects.equals(commands, analysisTaskStartRequest.commands) && Objects.equals(locations, analysisTaskStartRequest.locations);
+        return Objects.equals(taskId, analysisTaskStartRequest.taskId)
+                && Objects.equals(transformationProcessId, analysisTaskStartRequest.transformationProcessId)
+                && Objects.equals(commands, analysisTaskStartRequest.commands)
+                && Objects.equals(options, analysisTaskStartRequest.options)
+                && Objects.equals(locations, analysisTaskStartRequest.locations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(taskId, transformationProcessId, commands, locations);
+        return Objects.hash(taskId, transformationProcessId, commands, options, locations);
     }
 
     @Override
@@ -105,9 +120,8 @@ public class AnalysisTaskStartRequest {
             " taskId='" + getTaskId() + "'" +
             ", transformationProcessId='" + getTransformationProcessId() + "'" +
             ", commands='" + getCommands() + "'" +
+            ", options='" + getOptions() + "'" +
             ", locations='" + getLocations() + "'" +
             "}";
     }
-
-    
 }
