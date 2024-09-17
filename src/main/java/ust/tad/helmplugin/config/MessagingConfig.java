@@ -11,23 +11,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MessagingConfig {
 
-    @Autowired
-    private ConnectionFactory connectionFactory;
+  @Autowired private ConnectionFactory connectionFactory;
 
-    /**
-     * Used to add AMQP entities at runtime.
-     */
-    @Bean
-    public RabbitAdmin rabbitAdmin() {
-        return new RabbitAdmin(connectionFactory);
-    }
+  /** Used to add AMQP entities at runtime. */
+  @Bean
+  public RabbitAdmin rabbitAdmin() {
+    return new RabbitAdmin(connectionFactory);
+  }
 
-    /**
-     * Required to automatically transform messages with JSON body to Java objects.
-     */
-    @Bean
-    public MessageConverter jsonMessageConverter() {
-        return new Jackson2JsonMessageConverter();
-    }
-
+  /** Required to automatically transform messages with JSON body to Java objects. */
+  @Bean
+  public MessageConverter jsonMessageConverter() {
+    return new Jackson2JsonMessageConverter();
+  }
 }
