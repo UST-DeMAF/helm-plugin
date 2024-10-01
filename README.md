@@ -11,5 +11,5 @@
 ```
 or (requires build):
 ```shell
-java -jar target/helm-plugin-0.0.1-SNAPSHOT.jar
+java -jar target/helm-plugin-0.2.0-SNAPSHOT.jar
 ```

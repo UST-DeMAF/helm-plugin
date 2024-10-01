@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>ust.tad</groupId>
 	<artifactId>helm-plugin</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 	<name>helm-plugin</name>
 	<description>helm-plugin for technology-agnostic deployments</description>
 	<properties>
