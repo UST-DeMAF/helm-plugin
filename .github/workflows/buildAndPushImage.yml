@@ -47,3 +47,18 @@ jobs:
           push: true
           tags: ${{ env.IMAGE_URL }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           provenance: false
+
+  delete-untagged-images:
+    needs:
+      - build-using-dockerfile-push-2-ghcr
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/delete-package-versions@v5
+        with:
+          owner: ${{ github.repository_owner }}
+          package-name: ${{ env.IMAGE_NAME }}
+          package-type: "container"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-versions-to-keep: 3
+          delete-only-pre-release-versions: "true"
+          delete-only-untagged-versions: "true"
