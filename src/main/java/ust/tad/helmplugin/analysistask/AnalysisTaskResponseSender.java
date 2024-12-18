@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,71 +29,89 @@ public class AnalysisTaskResponseSender {
   @Value("${messaging.analysistask.response.exchange.name}")
   private String responseExchangeName;
 
+  /**
+   * Sends a success response to the response exchange.
+   *
+   * @param taskId The unique identifier of the task.
+   */
   public void sendSuccessResponse(UUID taskId) {
     LOG.info("Transformation completed successfully, sending success response");
-    ObjectMapper objectMapper = new ObjectMapper();
     AnalysisTaskResponse analysisTaskResponse = new AnalysisTaskResponse();
     analysisTaskResponse.setTaskId(taskId);
     analysisTaskResponse.setSuccess(true);
-
-    Message message;
-    try {
-      message =
-          MessageBuilder.withBody(objectMapper.writeValueAsString(analysisTaskResponse).getBytes())
-              .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-              .setHeader("formatIndicator", "AnalysisTaskResponse")
-              .build();
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-      return;
-    }
-    template.convertAndSend(responseExchangeName, "", message);
+    sendAnalysisTaskResponse(analysisTaskResponse);
   }
 
+  /**
+   * Send a failure response as an Analysis Task Response containing the error message.
+   *
+   * @param taskId the ID of the current analysis task.
+   * @param errorMessage the reason for the failed task.
+   */
   public void sendFailureResponse(UUID taskId, String errorMessage) {
     LOG.info("Sending failure response: " + errorMessage);
-    ObjectMapper objectMapper = new ObjectMapper();
     AnalysisTaskResponse analysisTaskResponse = new AnalysisTaskResponse();
     if (taskId != null) {
       analysisTaskResponse.setTaskId(taskId);
     }
     analysisTaskResponse.setSuccess(false);
     analysisTaskResponse.setErrorMessage(errorMessage);
-
-    Message message;
-    try {
-      message =
-          MessageBuilder.withBody(objectMapper.writeValueAsString(analysisTaskResponse).getBytes())
-              .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-              .setHeader("formatIndicator", "AnalysisTaskResponse")
-              .build();
-    } catch (JsonProcessingException e) {
-      e.printStackTrace();
-      return;
-    }
-    template.convertAndSend(responseExchangeName, "", message);
+    sendAnalysisTaskResponse(analysisTaskResponse);
   }
 
+  /**
+   * Send a message containing an Analysis Task Response.
+   * The response is added as a JSON in the message body.
+   * The format indicator field in the header is used to identify the type of response.
+   *
+   * @param analysisTaskResponse the Analysis Task Response to send.
+   */
+  private void sendAnalysisTaskResponse(AnalysisTaskResponse analysisTaskResponse) {
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      Message message =
+              MessageBuilder.withBody(objectMapper.writeValueAsString(analysisTaskResponse).getBytes())
+                      .setContentType(MessageProperties.CONTENT_TYPE_JSON)
+                      .setHeader("formatIndicator", "AnalysisTaskResponse")
+                      .build();
+      template.convertAndSend(responseExchangeName, "", message);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Send the Embedded Deployment Model Analysis Task Request.
+   * The request is added as a JSON in the message body.
+   * The format indicator field in the header is used to identify the type of response.
+   *
+   * @param request the Embedded Deployment Model Analysis Task Request.
+   */
   public void sendEmbeddedDeploymentModelAnalysisRequest(
-      EmbeddedDeploymentModelAnalysisRequest request) {
+          EmbeddedDeploymentModelAnalysisRequest request) {
     LOG.info("Sending EmbeddedDeploymentModelAnalysisRequest: " + request.toString());
     ObjectMapper objectMapper = new ObjectMapper();
-    Message message;
     try {
-      message =
-          MessageBuilder.withBody(objectMapper.writeValueAsString(request).getBytes())
-              .setContentType(MessageProperties.CONTENT_TYPE_JSON)
-              .setHeader("formatIndicator", "EmbeddedDeploymentModelAnalysisRequest")
-              .build();
+      Message message =
+              MessageBuilder.withBody(objectMapper.writeValueAsString(request).getBytes())
+                      .setContentType(MessageProperties.CONTENT_TYPE_JSON)
+                      .setHeader("formatIndicator", "EmbeddedDeploymentModelAnalysisRequest")
+                      .build();
+      template.convertAndSend(responseExchangeName, "", message);
     } catch (JsonProcessingException e) {
       e.printStackTrace();
-      return;
     }
-    template.convertAndSend(responseExchangeName, "", message);
   }
 
+  /**
+   * Sends an Embedded Deployment Model Analysis Task Request created from the information of an
+   * embedded deployment model to the response exchange.
+   *
+   * @param embeddedDeploymentModel The embedded deployment model to be sent.
+   * @param parentTaskId The unique identifier of the parent task.
+   */
   public void sendEmbeddedDeploymentModelAnalysisRequestFromModel(
-      TechnologySpecificDeploymentModel embeddedDeploymentModel, UUID parentTaskId) {
+          TechnologySpecificDeploymentModel embeddedDeploymentModel, UUID parentTaskId) {
     EmbeddedDeploymentModelAnalysisRequest request = new EmbeddedDeploymentModelAnalysisRequest();
     request.setParentTaskId(parentTaskId);
     request.setTransformationProcessId(embeddedDeploymentModel.getTransformationProcessId());
@@ -117,6 +136,26 @@ public class AnalysisTaskResponseSender {
     }
     request.setLocations(locations);
 
+    sendEmbeddedDeploymentModelAnalysisRequest(request);
+  }
+
+  /**
+   * Send an Embedded Deployment Model Analysis Task Request containing TADM entities to further
+   * analyze.
+   *
+   * @param tadmEntities the TADM entities to analyze.
+   * @param parentTaskId the ID of the current analysis task.
+   * @param transformationProcessId the ID of the current transformation process.
+   * @param technology the deployment technology of the embedded deployment model.
+   */
+  public void sendEmbeddedDeploymentModelAnalysisRequestFromTADMEntities(
+          Map<String, List<String>> tadmEntities, UUID parentTaskId, UUID transformationProcessId
+          , String technology) {
+    EmbeddedDeploymentModelAnalysisRequest request = new EmbeddedDeploymentModelAnalysisRequest();
+    request.setParentTaskId(parentTaskId);
+    request.setTransformationProcessId(transformationProcessId);
+    request.setTechnology(technology);
+    request.setTadmEntities(tadmEntities);
     sendEmbeddedDeploymentModelAnalysisRequest(request);
   }
 }

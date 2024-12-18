@@ -25,8 +25,8 @@ public class AnalysisTaskReceiver {
    * Receives a message from the analysis task request queue. Based on the type of the message given
    * by the formatIndicator header, it calls a respective function.
    *
-   * @param message
-   * @throws JsonProcessingException
+   * @param message The message to be processed.
+   * @throws JsonProcessingException If the message could not be processed.
    */
   public void receive(Message message) {
     if (message.getMessageProperties().getHeader("formatIndicator") != null) {
@@ -47,27 +47,31 @@ public class AnalysisTaskReceiver {
    * Receives a message of type AnalysisTaskStartRequest. Transforms the message into an entity of
    * type AnalysisTaskStartRequest. Starts the analysis process of the plugin.
    *
-   * @param message
+   * @param message The message containing the AnalysisTaskStartRequest.
    */
   private void receiveAnalysisTaskStartRequest(Message message) {
     ObjectMapper mapper = new ObjectMapper();
 
     AnalysisTaskStartRequest analysisTaskStartRequest =
-        mapper.convertValue(
-            jsonMessageConverter.fromMessage(message), AnalysisTaskStartRequest.class);
+            mapper.convertValue(
+                    jsonMessageConverter.fromMessage(message), AnalysisTaskStartRequest.class);
 
     LOG.info(
-        String.format(
-            "received AnalysisTaskStartRequest: %s", analysisTaskStartRequest.toString()));
+            String.format(
+                    "received AnalysisTaskStartRequest: %s", analysisTaskStartRequest.toString()));
     analysisService.startAnalysis(
-        analysisTaskStartRequest.getTaskId(),
-        analysisTaskStartRequest.getTransformationProcessId(),
-        analysisTaskStartRequest.getCommands(),
-        analysisTaskStartRequest.getOptions(),
-        analysisTaskStartRequest.getLocations());
+            analysisTaskStartRequest.getTaskId(),
+            analysisTaskStartRequest.getTransformationProcessId(),
+            analysisTaskStartRequest.getCommands(),
+            analysisTaskStartRequest.getOptions(),
+            analysisTaskStartRequest.getLocations());
   }
 
-  /** Creates and sends an AnalysisTaskResponse containing an error message. */
+  /**
+   * Creates and sends an AnalysisTaskResponse containing an error message.
+   *
+   * @param errorMessage The error message to be sent.
+   */
   private void respondWithErrorMessage(String errorMessage) {
     analysisTaskResponseSender.sendFailureResponse(null, errorMessage);
   }
