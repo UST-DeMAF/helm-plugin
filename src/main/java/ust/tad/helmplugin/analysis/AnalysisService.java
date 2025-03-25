@@ -1,8 +1,6 @@
 package ust.tad.helmplugin.analysis;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -104,11 +102,6 @@ public class AnalysisService {
       } else if (command.startsWith("helm install")) {
         String templateCommand = command.replaceFirst("install", "template");
         String path = helmCommandExecuter.renderTemplate(templateCommand);
-        BufferedReader br = new BufferedReader(new FileReader(path));
-        if (br.readLine() == null) { //if the file is empty try rendering it again
-          System.out.println("Trying to render helm template again!");
-          path = helmCommandExecuter.renderTemplate(templateCommand);
-        }
         TechnologySpecificDeploymentModel embeddedDeploymentModel =
             addNewEmbeddedDeploymentModel(path);
         int index = this.tsdm.addOrUpdateEmbeddedDeploymentModel(embeddedDeploymentModel);
