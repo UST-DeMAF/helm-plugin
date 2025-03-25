@@ -59,7 +59,7 @@ public class HelmCommandExecuter {
 
     String line;
     while ((line = reader.readLine()) != null) {
-      output.append(line + "\n");
+      output.append(line).append("\n");
     }
     int exitCode = process.waitFor();
     assert exitCode == 0;
