@@ -22,7 +22,7 @@ public class HelmCommandExecuter {
    * @param command
    * @throws IOException
    */
-  public void executeHelmCommand(String command) throws IOException {
+  public void executeHelmCommand(String command) throws IOException, InterruptedException {
     boolean isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
     ProcessBuilder builder = new ProcessBuilder();
     if (isWindows) {
@@ -30,7 +30,7 @@ public class HelmCommandExecuter {
     } else {
       builder.command("sh", "-c", command);
     }
-    builder.start();
+    builder.start().waitFor();
   }
 
   /**
