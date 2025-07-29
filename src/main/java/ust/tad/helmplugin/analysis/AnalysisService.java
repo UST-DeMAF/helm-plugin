@@ -57,7 +57,11 @@ public class AnalysisService {
     this.newEmbeddedDeploymentModelIndexes.clear();
     TechnologySpecificDeploymentModel completeTsdm =
         modelsService.getTechnologySpecificDeploymentModel(transformationProcessId);
-    this.tsdm = getExistingTsdm(completeTsdm, commands);
+    if (locations.isEmpty()) {
+      this.tsdm = completeTsdm;
+    } else {
+      this.tsdm = getExistingTsdm(completeTsdm, commands);
+    }
     if (tsdm == null) {
       analysisTaskResponseSender.sendFailureResponse(
           taskId, "No technology-specific deployment model found!");
