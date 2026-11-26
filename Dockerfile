@@ -21,8 +21,6 @@ WORKDIR /app
 # Copy all built files from the build stage to the runtime stage
 COPY --from=build /app /app
 
-# Install curl for downloading the Helm install script
-
 # Download the Helm install script, make it executable and run it
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
 	chmod 700 get_helm.sh && \
