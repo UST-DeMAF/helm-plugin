@@ -11,8 +11,9 @@ COPY src ./src
 # Build the project, using multiple threads and skipping tests
 RUN mvn -T 2C -q clean package -DskipTests
 
-# Stage 2: Create a minimal runtime image using OpenJDK 11 JRE
-FROM openjdk:11-jre-slim
+# Stage 2: Create a minimal runtime image using the Eclipse Temurin 11 JRE
+# The image already contains curl
+FROM eclipse-temurin:11-jre
 
 # Set the working directory for the runtime stage
 WORKDIR /app
@@ -21,7 +22,6 @@ WORKDIR /app
 COPY --from=build /app /app
 
 # Install curl for downloading the Helm install script
-RUN apt update && apt install --no-install-recommends -y curl
 
 # Download the Helm install script, make it executable and run it
 RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 && \
